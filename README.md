@@ -10,12 +10,10 @@ This repository is a study project to understand machine learning algorithms by 
 
 - [x] Linear Regression
 - [x] Gradient Descent
-- [x] Bias Optimization
+- [x] Logistic Regression
 
 ## To Do
 
-- [ ] Logistic Regression
-- [ ] Sigmoid
 - [ ] Softmax Regression
 - [ ] Cross Entropy Loss
 - [ ] Neural Network

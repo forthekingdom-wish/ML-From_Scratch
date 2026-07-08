@@ -2,55 +2,61 @@ package ml.model;
 
 import ml.optimizer.GradientDescent;
 
-public class LinearRegression {
-
+public class LogisticRegression {
     private double weight;
     private double bias;
     private double learningRate;
+    private double threshold;
 
     private GradientDescent optimizer = new GradientDescent();
 
-    public LinearRegression(double weight, double bias, double learningRate) {
+    public LogisticRegression(double weight, double bias, double learningRate, double threshold) {
         this.weight = weight;
         this.bias = bias;
         this.learningRate = learningRate;
-    }
-
-    public void setWeight(double weight) {
-        this.weight = weight;
-    }
-
-    public void setBias(double bias) {
-        this.bias = bias;
-    }
-
-    public void setLearningRate(double learningRate) {
-        this.learningRate = learningRate;
+        this.threshold = threshold;
     }
 
     public double getWeight() {
         return weight;
     }
 
-    public double predict(double x) {
+    //가설 z
+    public double z(double x) {
         return weight * x + bias;
     }
 
+    //sigmoid함수 -> 1일 확률.
+    public double sigmoid(double z) {
+        return 1.0/(1.0 + Math.exp(-z));
+    }
+
+    //x일 때 h가 1일 확률
+    public double probability(double x) {
+        return sigmoid(z(x));
+    }
+
+    public double predict(double x) {
+        return probability(x) >= threshold ? 1 : 0;
+    }
+
+    //cost는 어떻게 구했나. 정답 y[]와 가설의 값 yHat을 비교한다.
     public double computeCost(double[] x, double[] y) {
 
         double sum = 0;
 
         for(int i=0;i<x.length;i++){
 
-            double prediction = predict(x[i]);
+            double prediction = probability(x[i]);
+            prediction = Math.max(1e-15, Math.min(1-1e-15, prediction));
 
-            double error = prediction - y[i];
+            double error = (-1.0) * y[i] * Math.log(prediction) - (1.0-y[i]) * Math.log(1.0 - prediction);
 
-            sum += error * error;
+            sum += error;
 
         }
 
-        return sum/(2*x.length);
+        return sum/x.length;
 
     }
 
@@ -60,7 +66,7 @@ public class LinearRegression {
 
         for(int i=0;i<x.length;i++){
 
-            gradient += (predict(x[i])-y[i])*x[i];
+            gradient += (probability(x[i])-y[i])*x[i];
 
         }
 
@@ -73,7 +79,7 @@ public class LinearRegression {
         double gradient = 0;
 
         for(int i=0;i<x.length;i++){
-            gradient += (predict(x[i])-y[i]);
+            gradient += (probability(x[i])-y[i]);
         }
         return gradient / x.length;
     }
@@ -110,5 +116,4 @@ public class LinearRegression {
         }
 
     }
-
 }
